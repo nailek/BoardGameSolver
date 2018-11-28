@@ -57,114 +57,31 @@ public class Tauler {
     private void addSecondRound(){//ToDo: Separar en diferents tipus d'iteradors Axial(radial), Circular, round 1, 2 , 3,...
         addNodes(12);
         //TODO: Delete hardcoded variables
-        class EdgeIterator {
-            private int k;
-            public int i, j;
 
-            EdgeDirection dir;
-            private int indexDir;
-            private Queue<EdgeDirection> axialQueueDir;
-            private Queue<EdgeDirection> circleQueueDir;
-            private Queue<EdgeDirection> tmpQueueDir;
-            private boolean axial;
-
-            public EdgeIterator(int i, int j) {
-                this.i = i;
-                this.j = j;
-                axialQueueDir = new LinkedTransferQueue<>();
-                circleQueueDir = new LinkedTransferQueue<>();
-                axialQueue();
-                circleQueue();
-                k = 0;
-            }
-            public void nextAxialIterator(){
-                if (k == 0 || k == 1) {j++; nextDir(); k++;}
-                else {i++; k=0; nextQueue();}
-            }
-            public void nextCircleIterator(){
-                i++; j++; nextDir();
-            }
-            private void nextDir() {
-                dir = tmpQueueDir.poll();
-            }
-            private void nextQueue() {
-                axialQueueDir.offer(axialQueueDir.poll()); //Puts the first one to the last position
-                tmpQueueDir = new LinkedTransferQueue<>(axialQueueDir);
-                dir = tmpQueueDir.poll();
-            }
-            private void axialQueue() {
-                axialQueueDir.add(EdgeDirection.DIAGONALUPDOWN);
-                axialQueueDir.add(EdgeDirection.HORIZONTAL);
-                axialQueueDir.add(EdgeDirection.DIAGONALDOWNUP);
-                tmpQueueDir = new LinkedTransferQueue<>(axialQueueDir);
-                dir = tmpQueueDir.poll();
-            }
-            private void circleQueue() {
-                circleQueueDir.add(EdgeDirection.DIAGONALDOWNUP);
-                circleQueueDir.add(EdgeDirection.DIAGONALUPDOWN);
-                circleQueueDir.add(EdgeDirection.DIAGONALUPDOWN);
-                circleQueueDir.add(EdgeDirection.HORIZONTAL);
-                circleQueueDir.add(EdgeDirection.HORIZONTAL);
-                circleQueueDir.add(EdgeDirection.DIAGONALDOWNUP);
-                tmpQueueDir = new LinkedTransferQueue<>(circleQueueDir);
-                circleQueueDir.addAll(tmpQueueDir);
-                tmpQueueDir = new LinkedTransferQueue<>(circleQueueDir);
-                dir = tmpQueueDir.poll();
-            }
-        }
-        EdgeIterator it = new EdgeIterator(1,7);
+        EdgeIterator it = new EdgeIterator(1, 7, 2, true);
         for(int i = 0; i < 18; ++i) { //6 nodes, 3 edges per node.
             if(i == 17) edges.add(createEdge(it.i, 7, it.dir)); //Closing the cicle.
             else edges.add(createEdge(it.i, it.j, it.dir));
-            it.nextAxialIterator();
+            it.nextIterator();
         }
-        it = new EdgeIterator(7,8);
+        it = new EdgeIterator(7, 8, 2, false);
         for(int i = 0; i < 12; ++i) {
             if(i == 11) edges.add(createEdge(it.i, 7, it.dir));
             else edges.add(createEdge(it.i, it.j, it.dir));
-            it.nextCircleIterator();
+            it.nextIterator();
         }
     }
 
     private void addThirdRound(){ //TODO: Still to do
-        addNodes(18);
-        //TODO: Delete hardcoded variables
-        class EdgeIterator {
-            private int k;
-            public int i, j;
-
-            EdgeDirection dir;
-            private int indexDir;
-            private Queue<EdgeDirection> queueDir;
-            private Queue<EdgeDirection> tmpQueueDir;
-
-            public EdgeIterator(int i, int j) {
-                this.i = i;
-                this.j = j;
-                queueDir = new LinkedTransferQueue<>();
-                queueDir.add(EdgeDirection.DIAGONALUPDOWN);
-                queueDir.add(EdgeDirection.HORIZONTAL);
-                queueDir.add(EdgeDirection.DIAGONALDOWNUP);
-                tmpQueueDir = new LinkedTransferQueue<>(queueDir);
-                dir = tmpQueueDir.poll();
-                k = 0;
-            }
-            public void nextIterator(){
-                if (k == 0 || k == 1) {j++; nextDir(); k++;}
-                else {i++; k=0; nextQueue();}
-            }
-            private void nextDir() {
-                dir = tmpQueueDir.poll();
-            }
-            private void nextQueue() {
-                queueDir.offer(queueDir.poll()); //Puts the first one to the last position
-                tmpQueueDir = new LinkedTransferQueue<>(queueDir);
-                dir = tmpQueueDir.poll();
-            }
-        }
-        EdgeIterator it = new EdgeIterator(1,7);
+        EdgeIterator it = new EdgeIterator(1, 7, 3, true);
         for(int i = 0; i < 18; ++i) { //6 nodes, 3 edges per node.
             if(i == 17) edges.add(createEdge(it.i, 7, it.dir)); //Closing the cicle.
+            else edges.add(createEdge(it.i, it.j, it.dir));
+            it.nextIterator();
+        }
+        it = new EdgeIterator(7, 8, 3, false);
+        for(int i = 0; i < 12; ++i) {
+            if(i == 11) edges.add(createEdge(it.i, 7, it.dir));
             else edges.add(createEdge(it.i, it.j, it.dir));
             it.nextIterator();
         }
