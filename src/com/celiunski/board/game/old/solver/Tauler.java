@@ -1,4 +1,4 @@
-package com.celiunski.board.game.solver;
+package com.celiunski.board.game.old.solver;
 
 import java.util.*;
 import java.util.concurrent.LinkedTransferQueue;
@@ -19,6 +19,7 @@ public class Tauler {
     private void initTauler() {
         addCenterAndFirstRound();
         addSecondRound();
+        addThirdRound();
     }
 
     private void addCenterAndFirstRound() {
@@ -72,16 +73,11 @@ public class Tauler {
         }
     }
 
-    private void addThirdRound(){ //TODO: Still to do
-        EdgeIterator it = new EdgeIterator(1, 7, 3, true);
-        for(int i = 0; i < 18; ++i) { //6 nodes, 3 edges per node.
-            if(i == 17) edges.add(createEdge(it.i, 7, it.dir)); //Closing the cicle.
-            else edges.add(createEdge(it.i, it.j, it.dir));
-            it.nextIterator();
-        }
-        it = new EdgeIterator(7, 8, 3, false);
-        for(int i = 0; i < 12; ++i) {
-            if(i == 11) edges.add(createEdge(it.i, 7, it.dir));
+    private void addThirdRound() {
+        addNodes(18);
+        EdgeIterator it = new EdgeIterator(7, 19, 3, true);
+        for(int i = 0; i < 6*6; ++i) { //6 nodes, 3 edges per node.
+            if(i == 6*6-1) edges.add(createEdge(it.i, 19, it.dir)); //Closing the cicle.
             else edges.add(createEdge(it.i, it.j, it.dir));
             it.nextIterator();
         }

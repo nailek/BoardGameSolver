@@ -1,4 +1,4 @@
-package com.celiunski.board.game.solver;
+package com.celiunski.board.game.old.solver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
