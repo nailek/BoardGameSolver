@@ -1,10 +1,12 @@
 package com.celiunski.board.game.board;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.celiunski.board.game.Exception.BoardNodeNotFoundException;
 import com.celiunski.board.game.utils.Utils;
 import com.celiunski.board.game.utils.Vector3;
 
@@ -40,6 +42,10 @@ public class Board {
         return board.get(Utils.createId(vector3.x, vector3.y, vector3.z));
     }
 
+    private BoardNode getNode(String id) {
+        return board.get(id);
+    }
+
     private Set<String> getBoardKeys() {
         return board.keySet();
     }
@@ -72,31 +78,67 @@ public class Board {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public String getAdjacentNodeId(String id, Utils.Axis axis, Utils.Move move) throws BoardNodeNotFoundException {
+    //TODO: Add get free nodes
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public List<String> getAdjacents(String id) {
+        List<String> adjacents = new ArrayList<>();
+        adjacents.add(getAdjacentNodeId(id, Utils.Axis.X, Utils.Move.UP));
+        adjacents.add(getAdjacentNodeId(id, Utils.Axis.X, Utils.Move.DOWN));
+        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Y, Utils.Move.UP));
+        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Y, Utils.Move.DOWN));
+        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Z, Utils.Move.UP));
+        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Z, Utils.Move.DOWN));
+        adjacents.removeAll(Collections.singletonList(null));
+        return adjacents;
+    }
+
+    public List<String> getEmpty2PositionsAway(String id) {
+        List<String> adjacents = new ArrayList<>();
+        adjacents.add(getKPositionsAwayNodeId(id, Utils.Axis.X, Utils.Move.UP,2));
+        adjacents.add(getKPositionsAwayNodeId(id, Utils.Axis.X, Utils.Move.DOWN,2));
+        adjacents.add(getKPositionsAwayNodeId(id, Utils.Axis.Y, Utils.Move.UP,2));
+        adjacents.add(getKPositionsAwayNodeId(id, Utils.Axis.Y, Utils.Move.DOWN,2));
+        adjacents.add(getKPositionsAwayNodeId(id, Utils.Axis.Z, Utils.Move.UP,2));
+        adjacents.add(getKPositionsAwayNodeId(id, Utils.Axis.Z, Utils.Move.DOWN,2));
+        adjacents.removeAll(Collections.singletonList(null));
+        for (int i = adjacents.size()-1; i >= 0; i--) {
+            if(getNode(adjacents.get(i)).isFilled()) {
+                adjacents.remove(i);
+            }
+        }
+        return adjacents;
+    }
+
+    public String getAdjacentNodeId(String id, Utils.Axis axis, Utils.Move move) {
+        return getKPositionsAwayNodeId(id, axis, move, 1);
+    }
+    private String getKPositionsAwayNodeId(String id, Utils.Axis axis, Utils.Move move, int k) {
         Vector3 vector3 = Utils.getVectorFromId(id);
         switch (axis) {
             case X:
                 if(move.equals(Utils.Move.UP)) {
-                    vector3.x++;
+                    vector3.x += k;
                 }else {
-                    vector3.x--;
+                    vector3.x -= k;
                 }
             case Y:
                 if(move.equals(Utils.Move.UP)) {
-                    vector3.y++;
+                    vector3.y += k;
                 }else {
-                    vector3.y--;
+                    vector3.y -= k;
                 }
             case Z:
                 if(move.equals(Utils.Move.UP)) {
-                    vector3.z++;
+                    vector3.z += k;
                 }else {
-                    vector3.z--;
+                    vector3.z -= k;
                 }
         }
         String adjacentId = Utils.createId(vector3);
         if (board.get(adjacentId) == null) {
-            throw new BoardNodeNotFoundException();
+            return null;
         }
         return adjacentId;
     }

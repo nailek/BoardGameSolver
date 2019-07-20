@@ -10,6 +10,6 @@ public class Solver {
     }
 
     public void findAvailableMoves() {
-
+        //board.get
     }
 }
