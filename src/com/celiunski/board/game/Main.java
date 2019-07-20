@@ -12,5 +12,6 @@ public class Main {
         Solver solver = new Solver(board);
         solver.findAvailableMoves();
         board.printIt();
+        board.printBoardHashMap();
     }
 }
