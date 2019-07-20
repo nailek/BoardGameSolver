@@ -1,6 +1,19 @@
 package com.celiunski.board.game.utils;
 
 public class Utils {
+
+    public enum Axis {
+        X, Y, Z
+    }
+
+    public enum Move {
+        UP, DOWN
+    }
+
+    public static Axis axis;
+
+    public static Move move;
+
     public static <T> void print(T t) {
         System.out.print(t);
     }
@@ -14,6 +27,10 @@ public class Utils {
 
     public static String createId(int x, int y, int z) {
         return ""+x+";"+y+";"+z;
+    }
+
+    public static String createId(Vector3 vector3) {
+        return ""+vector3.x+";"+vector3.y+";"+vector3.z;
     }
 
     public static Vector3 getVectorFromId(String id) throws IllegalArgumentException {

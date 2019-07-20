@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.celiunski.board.game.Exception.BoardNodeNotFoundException;
 import com.celiunski.board.game.utils.Utils;
 import com.celiunski.board.game.utils.Vector3;
 
@@ -33,6 +34,10 @@ public class Board {
 
     private BoardNode getNode(int x, int y, int z) {
         return board.get(Utils.createId(x, y, z));
+    }
+
+    private BoardNode getNode(Vector3 vector3) {
+        return board.get(Utils.createId(vector3.x, vector3.y, vector3.z));
     }
 
     private Set<String> getBoardKeys() {
@@ -67,12 +72,40 @@ public class Board {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    public String getAdjacentNodeId(String id, Utils.Axis axis, Utils.Move move) throws BoardNodeNotFoundException {
+        Vector3 vector3 = Utils.getVectorFromId(id);
+        switch (axis) {
+            case X:
+                if(move.equals(Utils.Move.UP)) {
+                    vector3.x++;
+                }else {
+                    vector3.x--;
+                }
+            case Y:
+                if(move.equals(Utils.Move.UP)) {
+                    vector3.y++;
+                }else {
+                    vector3.y--;
+                }
+            case Z:
+                if(move.equals(Utils.Move.UP)) {
+                    vector3.z++;
+                }else {
+                    vector3.z--;
+                }
+        }
+        String adjacentId = Utils.createId(vector3);
+        if (board.get(adjacentId) == null) {
+            throw new BoardNodeNotFoundException();
+        }
+        return adjacentId;
+    }
 
-    public static boolean isAdjacent(String ida, String idb) throws IllegalArgumentException {
+    public boolean isAdjacent(String ida, String idb) throws IllegalArgumentException {
         return isAdjacent(Utils.getVectorFromId(ida), Utils.getVectorFromId(idb));
     }
 
-    private static boolean isAdjacent(Vector3 vector3a, Vector3 vector3b) {
+    private boolean isAdjacent(Vector3 vector3a, Vector3 vector3b) {
         return vector3a.x == vector3b.x
                 && vector3a.y == vector3b.y
                 && Math.abs(vector3a.z - vector3b.z) == 1
@@ -84,11 +117,11 @@ public class Board {
                 && Math.abs(vector3a.y - vector3b.y) == 1;
     }
 
-    public static boolean isAllowedMove(String ida, String idb) {
+    public boolean isAllowedMove(String ida, String idb) {
         return isAllowedMove(Utils.getVectorFromId(ida), Utils.getVectorFromId(idb));
     }
 
-    private static boolean isAllowedMove(Vector3 vector3a, Vector3 vector3b) {
+    private boolean isAllowedMove(Vector3 vector3a, Vector3 vector3b) {
         boolean allowed = true;
         if (vector3a.x == 3 && vector3b.x == 3 &&
                 (vector3a.y == 1 && vector3b.z == 2 || vector3a.z == 2 && vector3b.y == 2)) {
