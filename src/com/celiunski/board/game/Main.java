@@ -1,7 +1,7 @@
 package com.celiunski.board.game;
 
-import com.celiunski.board.game.old.solver.Tauler;
-import com.celiunski.board.game.solver.Board;
+import com.celiunski.board.game.board.Board;
+import com.celiunski.board.game.solver.Solver;
 
 public class Main {
 
@@ -9,6 +9,8 @@ public class Main {
         //To get vertex using index at O(1) time
         //private List<V> verticesLookup;
         Board board = new Board();
+        Solver solver = new Solver(board);
+        solver.findAvailableMoves();
         board.printIt();
     }
 }
