@@ -11,13 +11,22 @@ public class BoardNode {
     private boolean filled;
     private Vector3 vector3;
 
-    BoardNode(int x, int y) {
+    BoardNode(int x, int y, boolean filled) {
         this.x = x;
         this.y = y;
         this.z = Utils.get3rdAxis(x, y);
-        id = Utils.createId(x, y, z);
-        filled = x != 0 || y != 0 || z != 0; // Only (0,0,0) is empty.
+        id = Utils.getID(x, y, z);
+        this.filled = filled;
         vector3 = new Vector3(x, y, z);
+    }
+
+    BoardNode(BoardNode node) {
+        this.x = node.x;
+        this.y = node.y;
+        this.z = node.z;
+        id = node.id;
+        filled = node.filled;
+        vector3 = node.vector3;
     }
 
     String getId() {

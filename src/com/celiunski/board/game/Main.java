@@ -9,9 +9,7 @@ public class Main {
         //To get vertex using index at O(1) time
         //private List<V> verticesLookup;
         Board board = new Board();
-        Solver solver = new Solver(board);
-        solver.findAvailableMoves();
-        board.printIt();
-        board.printBoardHashMap();
+        Solver solver = new Solver();
+        solver.trySolve(board);
     }
 }
