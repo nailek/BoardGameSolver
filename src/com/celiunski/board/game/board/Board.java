@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.celiunski.board.game.Exception.BoardNodeNotFoundException;
+import com.celiunski.board.game.Exception.IncorrectIDException;
 import com.celiunski.board.game.utils.Utils;
 import com.celiunski.board.game.utils.Vector3;
 import com.sun.istack.internal.Nullable;
@@ -22,7 +24,7 @@ public class Board {
     private LinkedHashMap<String, BoardNode> board;
     final private int DIAMETER = 3;
 
-    Set<String> lastMoveNodes = new HashSet<>();
+    private Set<String> lastMoveNodes = new HashSet<>();
 
     public Board() {
         board = new LinkedHashMap<>();
@@ -118,7 +120,7 @@ public class Board {
     /* -------------------------------------------------------------------------------------------------------------- */
     /* ----------------------------------------- General Moves ------------------------------------------------------ */
 
-    public boolean movePice(String moveFrom, String moveTo) {
+    public boolean movePice(String moveFrom, String moveTo) throws IncorrectIDException {
         boolean allowedMove = isAllowedMove(moveFrom, moveTo);
         if(allowedMove) {
             String middleNode = BoardUtils.getMiddleNode(moveFrom, moveTo);
@@ -164,30 +166,25 @@ public class Board {
     }
 
     public List<String> getPossiblePiecesToMoveHere(String id) {
-        List<String> adjacents = new ArrayList<>();
         List<String> adjacents2Away = new ArrayList<>();
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.X, Utils.Move.UP));
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.X, Utils.Move.DOWN));
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Y, Utils.Move.UP));
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Y, Utils.Move.DOWN));
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Z, Utils.Move.UP));
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Z, Utils.Move.DOWN));
-        adjacents2Away.add(isAdjacent2Away(id, Utils.Axis.X, Utils.Move.UP));
-        adjacents2Away.add(isAdjacent2Away(id, Utils.Axis.X, Utils.Move.DOWN));
-        adjacents2Away.add(isAdjacent2Away(id, Utils.Axis.Y, Utils.Move.UP));
-        adjacents2Away.add(isAdjacent2Away(id, Utils.Axis.Y, Utils.Move.DOWN));
-        adjacents2Away.add(isAdjacent2Away(id, Utils.Axis.Z, Utils.Move.UP));
-        adjacents2Away.add(isAdjacent2Away(id, Utils.Axis.Z, Utils.Move.DOWN));
-        for (int i = adjacents2Away.size()-1; i >= 0; i--) {
-            String adjacent = adjacents.get(i);
-            String adjacent2Away = adjacents2Away.get(i);
-            if(adjacent == null || adjacent2Away == null) {
-                adjacents2Away.remove(i);
-            } else if(!getNode(adjacent).isFilled() || !getNode(adjacent2Away).isFilled()) {
-                adjacents2Away.remove(i);
+        try {
+            adjacents2Away.add(getAdjacent2Away(id, Utils.Axis.X, Utils.Move.UP));
+            adjacents2Away.add(getAdjacent2Away(id, Utils.Axis.X, Utils.Move.DOWN));
+            adjacents2Away.add(getAdjacent2Away(id, Utils.Axis.Y, Utils.Move.UP));
+            adjacents2Away.add(getAdjacent2Away(id, Utils.Axis.Y, Utils.Move.DOWN));
+            adjacents2Away.add(getAdjacent2Away(id, Utils.Axis.Z, Utils.Move.UP));
+            adjacents2Away.add(getAdjacent2Away(id, Utils.Axis.Z, Utils.Move.DOWN));
+
+            adjacents2Away.removeAll(Collections.singletonList(null));
+            for (int i = adjacents2Away.size() - 1; i >= 0; i--) {
+                if (!isAllowedMove(adjacents2Away.get(i), id)) {
+                    adjacents2Away.remove(i);
+                }
             }
+            //TODO: Order by distance to center (closer to farther)
+        } catch (IncorrectIDException e){
+            //Ignoring it
         }
-        //TODO: Order by distance to center (closer to farther)
         return adjacents2Away;
     }
 
@@ -196,43 +193,51 @@ public class Board {
 
     public List<String> getAdjacents(String id) {
         List<String> adjacents = new ArrayList<>();
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.X, Utils.Move.UP));
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.X, Utils.Move.DOWN));
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Y, Utils.Move.UP));
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Y, Utils.Move.DOWN));
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Z, Utils.Move.UP));
-        adjacents.add(getAdjacentNodeId(id, Utils.Axis.Z, Utils.Move.DOWN));
-        adjacents.removeAll(Collections.singletonList(null));
+        try {
+            adjacents.add(getAdjacentNodeId(id, Utils.Axis.X, Utils.Move.UP));
+            adjacents.add(getAdjacentNodeId(id, Utils.Axis.X, Utils.Move.DOWN));
+            adjacents.add(getAdjacentNodeId(id, Utils.Axis.Y, Utils.Move.UP));
+            adjacents.add(getAdjacentNodeId(id, Utils.Axis.Y, Utils.Move.DOWN));
+            adjacents.add(getAdjacentNodeId(id, Utils.Axis.Z, Utils.Move.UP));
+            adjacents.add(getAdjacentNodeId(id, Utils.Axis.Z, Utils.Move.DOWN));
+            adjacents.removeAll(Collections.singletonList(null));
+        } catch (IncorrectIDException e) {
+            //Ignoring it
+        }
         return adjacents;
     }
 
     public List<String> getEmpty2PositionsAway(String id) {
         List<String> adjacents = new ArrayList<>();
-        adjacents.add(isAdjacent2Away(id, Utils.Axis.X, Utils.Move.UP));
-        adjacents.add(isAdjacent2Away(id, Utils.Axis.X, Utils.Move.DOWN));
-        adjacents.add(isAdjacent2Away(id, Utils.Axis.Y, Utils.Move.UP));
-        adjacents.add(isAdjacent2Away(id, Utils.Axis.Y, Utils.Move.DOWN));
-        adjacents.add(isAdjacent2Away(id, Utils.Axis.Z, Utils.Move.UP));
-        adjacents.add(isAdjacent2Away(id, Utils.Axis.Z, Utils.Move.DOWN));
-        adjacents.removeAll(Collections.singletonList(null));
-        for (int i = adjacents.size()-1; i >= 0; i--) {
-            if(getNode(adjacents.get(i)).isFilled()) {
-                adjacents.remove(i);
+        try {
+            adjacents.add(getAdjacent2Away(id, Utils.Axis.X, Utils.Move.UP));
+            adjacents.add(getAdjacent2Away(id, Utils.Axis.X, Utils.Move.DOWN));
+            adjacents.add(getAdjacent2Away(id, Utils.Axis.Y, Utils.Move.UP));
+            adjacents.add(getAdjacent2Away(id, Utils.Axis.Y, Utils.Move.DOWN));
+            adjacents.add(getAdjacent2Away(id, Utils.Axis.Z, Utils.Move.UP));
+            adjacents.add(getAdjacent2Away(id, Utils.Axis.Z, Utils.Move.DOWN));
+            adjacents.removeAll(Collections.singletonList(null));
+            for (int i = adjacents.size() - 1; i >= 0; i--) {
+                if (getNode(adjacents.get(i)).isFilled()) {
+                    adjacents.remove(i);
+                }
             }
+        } catch (IncorrectIDException e) {
+            //Ignoring it
         }
         return adjacents;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public String getAdjacentNodeId(String id, Utils.Axis axis, Utils.Move move) {
+    public String getAdjacentNodeId(String id, Utils.Axis axis, Utils.Move move) throws IncorrectIDException {
         String adjacentId = BoardUtils.getAdjacentKAway(id, axis, move, 1);
         if (board.get(adjacentId) == null) {
             return null;
         }
         return adjacentId;
     }
-    public String isAdjacent2Away(String id, Utils.Axis axis, Utils.Move move) {
+    public String getAdjacent2Away(String id, Utils.Axis axis, Utils.Move move) throws IncorrectIDException {
         String adjacentId = BoardUtils.getAdjacentKAway(id, axis, move, 2);
         if (board.get(adjacentId) == null) {
             return null;
@@ -240,11 +245,11 @@ public class Board {
         return adjacentId;
     }
 
-    public boolean isAdjacent(String moveFromID, String moveToID) {
+    public boolean isAdjacent(String moveFromID, String moveToID) throws IncorrectIDException {
         return BoardUtils.isAdjacentKAway(Utils.getVector(moveFromID), Utils.getVector(moveToID), 1);
     }
 
-    private boolean isAllowedMove(String idA,  String idB) {
+    private boolean isAllowedMove(String idA,  String idB) throws IncorrectIDException {
         return isAllowedMove(Utils.getVector(idA), Utils.getVector(idB));
     }
     private boolean isAllowedMove(Vector3 moveFrom, Vector3 moveTo) {
@@ -254,8 +259,8 @@ public class Board {
             //TODO: Log, error, not 2away Adjacents
             return false;
         }
-        allowed &= !isBlockedPass(moveFrom, middleNode);
-        allowed &= !isBlockedPass(moveTo, middleNode);
+        //allowed &= !isBlockedPass(moveFrom, middleNode);
+        //allowed &= !isBlockedPass(moveTo, middleNode);
         allowed &= getNode(moveFrom).isFilled();
         allowed &= getNode(middleNode).isFilled();
         allowed &= !getNode(moveTo).isFilled();
@@ -263,22 +268,34 @@ public class Board {
         return allowed;
     }
 
-    public boolean isBlockedPass(String idA, String idB) {
+    public boolean isBlockedPass(String idA, String idB) throws IncorrectIDException {
         return isBlockedPass(Utils.getVector(idA), Utils.getVector(idB));
     }
 
     private boolean isBlockedPass(Vector3 vector3a, Vector3 vector3b) {
         boolean blocked = false;
-        if (vector3a.x == 3 && vector3b.x == 3 &&
-                (vector3a.y == 1 && vector3b.z == 2 || vector3a.z == 2 && vector3b.y == 2)) {
+
+        if (vector3a.x == -3 && vector3b.x == -3 &&
+                (vector3a.y == 1 && vector3b.y == 2 || vector3a.y == 2 && vector3b.y == 1)) {
+            blocked = true;
+        } else if (vector3a.x == +3 && vector3b.x == +3 &&
+                (vector3a.y == -1 && vector3b.y == -2 || vector3a.y == 2 && vector3b.y == 1)) {
+            blocked = true;
+        }
+        else if(vector3a.y == -3 && vector3b.y == -3 &&
+                (vector3a.x == 1 && vector3b.x == 2 || vector3a.x == 2 && vector3b.x == 1)) {
             blocked = true;
         }
         else if(vector3a.y == 3 && vector3b.y == 3 &&
-                (vector3a.x == 1 && vector3b.z == 2 || vector3a.z == 2 && vector3b.x == 2)) {
+                (vector3a.x == -1 && vector3b.x == -2 || vector3a.x == -2 && vector3b.x == -1)) {
+            blocked = true;
+        }
+        else if(vector3a.z == -3 && vector3b.z == -3 &&
+                (vector3a.x == 1 && vector3b.x == 2 || vector3a.x == 2 && vector3b.x == 1)) {
             blocked = true;
         }
         else if(vector3a.z == 3 && vector3b.z == 3 &&
-                (vector3a.x == 1 && vector3b.y == 2 || vector3a.y == 2 && vector3b.y == 2)) {
+                (vector3a.x == -1 && vector3b.x == -2 || vector3a.x == -2 && vector3b.x == -1)) {
             blocked = true;
         }
         return blocked;

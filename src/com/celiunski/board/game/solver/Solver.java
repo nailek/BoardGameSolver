@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.celiunski.board.game.Exception.IncorrectIDException;
 import com.celiunski.board.game.board.Board;
 import com.celiunski.board.game.utils.Utils;
 
@@ -20,13 +21,17 @@ public class Solver {
     private boolean isFinished = false;
     private boolean isCutShort = false;
 
-    private static final int testCount = -1;
+    private static final int testCount = 500000;
 
     public void trySolve(Board board) {
         isFinished = false;
         board.printIt();
         //TODO: Add stack to keep final solve moves.
-        makeMove(0, board);
+        int iterations = makeMove(0, board);
+        printEnd(board, iterations);
+    }
+
+    private void printEnd(Board board, int iterations) {
         Utils.println("");
         Utils.println("");
         Utils.println("");
@@ -34,12 +39,15 @@ public class Solver {
         Utils.println(" --- THE END ---");
         //printDeadEndBoards();
         //printUnreachedPossibleMoves();
-        if(isFinished || isCutShort) {
+        if(isFinished) {
             Utils.println(" --- Solved ---");
+        } else if (isCutShort) {
+            Utils.println(" --- Not solved: Program cut short---");
         } else {
             Utils.println(" --- Not solved ---");
         }
         board.printIt("To be solved");
+        Utils.println("Num of iterations: " + iterations);
         Utils.println("Retries: " + retries);
         if(finalBoard != null) {
             finalBoard.printIt("Final Board");
@@ -47,20 +55,10 @@ public class Solver {
         }
     }
 
-    private void printUnreachedPossibleMoves() {
-        for (Pair<Integer, List<Pair<String, List<String>>>> storedPossible : storePossibleMoves) {
-            Utils.printMovesList(""+storedPossible.getKey(), storedPossible.getValue());
-        }
-    }
-
-    private void printDeadEndBoards() {
-        for (int i = 0; i< deadEndBoards.size(); i++) {
-            deadEndBoards.get(i).printIt("Board: " + i);
-        }
-    }
-
     private int makeMove(int iteration, Board board) {
-        List<Pair<String, List<String>>> possibleMovesList = board.getAvailableMoves();
+        List<Pair<String, List<String>>> possibleMovesList;
+        possibleMovesList = board.getAvailableMoves();
+
         Map<String, List<String>> removedOptionsList = new LinkedHashMap<>();
         if(isFinished(board)) {
             ifApplyStoreFinalBoard(board);
@@ -102,21 +100,20 @@ public class Solver {
     private boolean isCutShort(Board board, int iteration) {
         boolean isCutShort = testCount != -1 && iteration >= testCount;
         if (!this.isCutShort && isCutShort) {
-            Utils.println("Cutting Short the program at testCount =" + testCount);
+            Utils.println("Cutting Short the intent. It is taking too long...");
             board.printIt("Iteration: "+iteration);
         }
         return isCutShort;
     }
 
-    //Moooooock, this is iterating type
     private int iterateEmptyNodesRecursive(int thisNodeIteration, int iteration, Board board, List<Pair<String, List<String>>> possibleMovesList, Map<String, List<String>> removedMovesList) {
-        Utils.debugMovesList("                          |||POSSIBLE||| ", possibleMovesList);
+        Utils.debugMovesList("|||POSSIBLE||| ", possibleMovesList);
         Utils.debugMovesHash("Removed ", removedMovesList);
         Board nextBoard = new Board(board);
         if(isFinished(board)) {
             ifApplyStoreFinalBoard(new Board(board));
             isFinished = true;
-            board.printIt("Final board at  Iteration: "+iteration);
+            board.printIt("Final board at Iteration: "+iteration);
             return iteration;
         }
         if(isCutShort(board, iteration)) {
@@ -135,7 +132,13 @@ public class Solver {
             String possibleMove = possibleMoves.get(0);
             iteration++;
             Utils.debugln("\nMove: "+iteration +" From: "+possibleMove +" To: "+ emptyNode);
-            nextBoard.movePice(possibleMove, emptyNode);
+            try {
+                nextBoard.movePice(possibleMove, emptyNode);
+            } catch (IncorrectIDException e) {
+                //TODO: Log this
+                Utils.print("There was an unexpected error: ");
+                e.printStackTrace();
+            }
             nextBoard.debugIt();
 
             iteration = makeMove(iteration, nextBoard);
@@ -148,8 +151,8 @@ public class Solver {
 
             Utils.debugln("Retrying from iteration: " + thisNodeIteration);
             retries++;
-            Utils.debugMovesList("Old Possible:", possibleMovesList);
-            Utils.debugMovesHash("Old Removed:", removedMovesList);
+            Utils.debugMovesList("Old Possible: ", possibleMovesList);
+            Utils.debugMovesHash("Old Removed: ", removedMovesList);
             board.debugIt("Old");
 
             if(removedMovesList.isEmpty()) {
@@ -167,20 +170,16 @@ public class Solver {
         }
         return iteration;
     }
-    /*
-    private int iterateEmptyNodesIterative(int iteration, Board board, List<Pair<String, List<String>>> possibleMovesList) {
-        for(int k = 0; k < possibleMovesList.size(); k++) {
-            String emptyNode = possibleMovesList.get(k).getKey();
-            List<String> possibleMoves = possibleMovesList.get(k).getValue();
-            if(!possibleMoves.isEmpty() || iteration >= 50) {
-                for(String possibleMove : possibleMoves) {
-                    //Utils.println("Move: "+iteration);
-                    iteration++;
-                    board.movePice(possibleMove, emptyNode);
-                    iteration = makeMove(iteration, board, possibleMovesList);
-                }
-            }
+
+    private void printUnreachedPossibleMoves() {
+        for (Pair<Integer, List<Pair<String, List<String>>>> storedPossible : storePossibleMoves) {
+            Utils.printMovesList(""+storedPossible.getKey(), storedPossible.getValue());
         }
-        return iteration;
-    }*/
+    }
+
+    private void printDeadEndBoards() {
+        for (int i = 0; i< deadEndBoards.size(); i++) {
+            deadEndBoards.get(i).printIt("Board: " + i);
+        }
+    }
 }

@@ -5,6 +5,7 @@ import javafx.util.Pair;
 import java.util.List;
 import java.util.Map;
 
+import com.celiunski.board.game.Exception.IncorrectIDException;
 import com.sun.istack.internal.Nullable;
 
 public class Utils {
@@ -142,13 +143,13 @@ public class Utils {
         return ""+vector3.x+";"+vector3.y+";"+vector3.z;
     }
 
-    public static Vector3 getVector(String id) throws IllegalArgumentException {
+    public static Vector3 getVector(String id) throws IncorrectIDException {
         if (id == null) {
-            throw new IllegalArgumentException("Argument can't be null. ");
+            throw new IncorrectIDException("ID can't be null. ");
         }
         String[] parts = id.split(";");
         if(parts.length != 3) {
-            throw new IllegalArgumentException("Argument doesn't follow the standard id form.");
+            throw new IncorrectIDException("ID doesn't follow the standard id form.");
         }
         return new Vector3(parts[0], parts[1], parts[2]);
     }

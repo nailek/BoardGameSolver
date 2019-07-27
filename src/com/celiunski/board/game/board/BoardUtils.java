@@ -1,10 +1,11 @@
 package com.celiunski.board.game.board;
 
+import com.celiunski.board.game.Exception.IncorrectIDException;
 import com.celiunski.board.game.utils.Utils;
 import com.celiunski.board.game.utils.Vector3;
 
 public class BoardUtils {
-    static String getAdjacentKAway(String id, Utils.Axis axis, Utils.Move move, int k){
+    static String getAdjacentKAway(String id, Utils.Axis axis, Utils.Move move, int k) throws IncorrectIDException {
         Vector3 vector3 = Utils.getVector(id);
         switch (axis) {
             case X:
@@ -44,7 +45,7 @@ public class BoardUtils {
                 || vector3a.z == vector3b.z && Math.abs(vector3a.y - vector3b.y) == k;
     }
 
-    static String getMiddleNode(String idA, String idB) {
+    static String getMiddleNode(String idA, String idB) throws IncorrectIDException {
         return Utils.getID(getMiddleNode(Utils.getVector(idA), Utils.getVector(idB)));
     }
 
