@@ -61,7 +61,7 @@ public class Solver {
 
         Map<String, List<String>> removedOptionsList = new LinkedHashMap<>();
         if(isFinished(board)) {
-            ifApplyStoreFinalBoard(board);
+            ifDeadEndStoreFinalBoard(board);
             isFinished = true;
             board.printIt("Final board at  Iteration: "+iteration);
             return iteration;
@@ -73,15 +73,15 @@ public class Solver {
         if(possibleMovesList.isEmpty()) {
             Utils.debugln("Move: "+iteration);
             board.debugIt("Outer: No possible Moves | ");
-            ifApplyStoreFinalBoard(new Board(board));
+            ifDeadEndStoreFinalBoard(new Board(board));
         } else {
             Utils.debugMovesList(possibleMovesList);
-            iteration = iterateEmptyNodesRecursive(iteration, iteration, board, possibleMovesList, removedOptionsList);
+            iteration = iteratePossibleMovesForThisNode(iteration, iteration, board, possibleMovesList, removedOptionsList);
         }
         return iteration;
     }
 
-    private void ifApplyStoreFinalBoard(Board board) {
+    private void ifDeadEndStoreFinalBoard(Board board) {
         if(board.getAvailableMoves().size() == 0) {
             deadEndBoards.add(board);
         } else {
@@ -106,12 +106,12 @@ public class Solver {
         return isCutShort;
     }
 
-    private int iterateEmptyNodesRecursive(int thisNodeIteration, int iteration, Board board, List<Pair<String, List<String>>> possibleMovesList, Map<String, List<String>> removedMovesList) {
+    private int iteratePossibleMovesForThisNode(int thisNodeIteration, int iteration, Board board, List<Pair<String, List<String>>> possibleMovesList, Map<String, List<String>> removedMovesList) {
         Utils.debugMovesList("|||POSSIBLE||| ", possibleMovesList);
         Utils.debugMovesHash("Removed ", removedMovesList);
         Board nextBoard = new Board(board);
         if(isFinished(board)) {
-            ifApplyStoreFinalBoard(new Board(board));
+            ifDeadEndStoreFinalBoard(new Board(board));
             isFinished = true;
             board.printIt("Final board at Iteration: "+iteration);
             return iteration;
@@ -123,7 +123,7 @@ public class Solver {
         if(possibleMovesList.isEmpty()) {
             Utils.debugln("Move: "+iteration);
             board.debugIt("Inner: No possible Moves");
-            ifApplyStoreFinalBoard(new Board(board));
+            ifDeadEndStoreFinalBoard(new Board(board));
             return iteration;
         }
         String emptyNode = possibleMovesList.get(0).getKey();
@@ -166,7 +166,7 @@ public class Solver {
             } else {
                 possibleMoves.remove(0);
             }
-            iteration = iterateEmptyNodesRecursive(thisNodeIteration, iteration, board, possibleMovesList, removedMovesList);
+            iteration = iteratePossibleMovesForThisNode(thisNodeIteration, iteration, board, possibleMovesList, removedMovesList);
         }
         return iteration;
     }
