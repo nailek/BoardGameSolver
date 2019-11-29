@@ -1,12 +1,11 @@
 package com.celiunski.board.game.utils;
 
-import javafx.util.Pair;
-
 import java.util.List;
 import java.util.Map;
 
 import com.celiunski.board.game.Exception.IncorrectIDException;
 import com.sun.istack.internal.Nullable;
+import com.sun.tools.javac.util.Pair;
 
 public class Utils {
 
@@ -61,11 +60,11 @@ public class Utils {
         printMovesList(movesList);
     }
     public static void printMoves(Pair<String,List<String>> moves) {
-        if(moves.getValue().isEmpty()) {
-            println(" Moves for: "+ moves.getKey());
+        if(moves.fst.isEmpty()) {
+            println(" Moves for: "+ moves.fst);
         } else {
-            print("Moves for: " + moves.getKey() +"  [  ");
-            for (String idPossibleMove : moves.getValue()) {
+            print("Moves for: " + moves.fst +"  [  ");
+            for (String idPossibleMove : moves.snd) {
                 print(idPossibleMove + " ");
             }
             //println("");

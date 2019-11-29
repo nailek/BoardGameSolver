@@ -1,6 +1,5 @@
 package com.celiunski.board.game.board;
 
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,11 +10,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.celiunski.board.game.Exception.BoardNodeNotFoundException;
 import com.celiunski.board.game.Exception.IncorrectIDException;
 import com.celiunski.board.game.utils.Utils;
 import com.celiunski.board.game.utils.Vector3;
 import com.sun.istack.internal.Nullable;
+import com.sun.tools.javac.util.Pair;
 
 public class Board {
 
@@ -372,7 +371,7 @@ public class Board {
     public void printPossibleMoves(List<Pair<String, List<String>>> availableMovesList, @Nullable Map<String, List<String>> removedMovesList) {
         Set<String> piecesToMove = new HashSet<>();
         for(Pair<String, List<String>> availableMoves : availableMovesList) {
-                piecesToMove.add(availableMoves.getKey());
+                piecesToMove.add(availableMoves.fst);
         }
         Set<String> removedMoves = new HashSet<>();
         if (removedMovesList != null) {

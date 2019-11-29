@@ -1,6 +1,5 @@
 package com.celiunski.board.game.solver;
 
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,17 +10,18 @@ import java.util.Map;
 import com.celiunski.board.game.Exception.IncorrectIDException;
 import com.celiunski.board.game.board.Board;
 import com.celiunski.board.game.utils.Utils;
+import com.sun.tools.javac.util.Pair;
 
 public class Solver {
     private int retries = 0;
     private Board finalBoard;
     private List<Board> deadEndBoards = new LinkedList<>();
-    private List<Pair<Integer, List<Pair<String, List<String>>>>> storePossibleMoves = new LinkedList<>();
+    private Map<Integer, List<Pair<String, List<String>>>> storePossibleMoves = new LinkedHashMap<>();
     private List<Board> halfSteps = new LinkedList<>();
     private boolean isFinished = false;
     private boolean isCutShort = false;
 
-    private static final int testCount = 500000;
+    private static final int testCount = -1;
 
     public void trySolve(Board board) {
         isFinished = false;
@@ -66,7 +66,7 @@ public class Solver {
             board.printIt("Final board at  Iteration: "+iteration);
             return iteration;
         }
-        if(isCutShort(board, iteration)) {
+        if(isCutShort(board, iteration)) { // Check if it is taking too long.
             isCutShort = true;
             return iteration;
         }
@@ -126,9 +126,9 @@ public class Solver {
             ifDeadEndStoreFinalBoard(new Board(board));
             return iteration;
         }
-        String emptyNode = possibleMovesList.get(0).getKey();
+        String emptyNode = possibleMovesList.get(0).fst;
         while(!possibleMovesList.isEmpty()) {
-            List<String> possibleMoves = possibleMovesList.get(0).getValue();
+            List<String> possibleMoves = possibleMovesList.get(0).snd;
             String possibleMove = possibleMoves.get(0);
             iteration++;
             Utils.debugln("\nMove: "+iteration +" From: "+possibleMove +" To: "+ emptyNode);
@@ -145,7 +145,7 @@ public class Solver {
             if(isFinished || isCutShort) {
                 board.printIt("Iteration: " + thisNodeIteration);
                 //board.printPossibleMoves("Iteration: " + thisNodeIteration, possibleMovesList, removedMovesList);
-                storePossibleMoves.add(new Pair<>(iteration, possibleMovesList));
+                storePossibleMoves.put(iteration, possibleMovesList);
                 return iteration;
             }
 
@@ -172,7 +172,7 @@ public class Solver {
     }
 
     private void printUnreachedPossibleMoves() {
-        for (Pair<Integer, List<Pair<String, List<String>>>> storedPossible : storePossibleMoves) {
+        for (Map.Entry<Integer, List<Pair<String, List<String>>>> storedPossible : storePossibleMoves.entrySet()) {
             Utils.printMovesList(""+storedPossible.getKey(), storedPossible.getValue());
         }
     }
