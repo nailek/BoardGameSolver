@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.celiunski.board.game.Exception.IncorrectIDException;
-import com.sun.istack.internal.Nullable;
 import com.sun.tools.javac.util.Pair;
 
 public class Utils {
@@ -39,7 +38,7 @@ public class Utils {
     public static void printIDs(List<String> ids) {
         printIDs(null, ids);
     }
-    public static void printIDs(@Nullable String message, List<String> ids) {
+    public static void printIDs(String message, List<String> ids) {
         if(message != null) {
             print(message+": ");
         }
@@ -55,7 +54,7 @@ public class Utils {
         }
         println("");
     }
-    public static void printMovesList(@Nullable String message, List<Pair<String,List<String>>> movesList) {
+    public static void printMovesList(String message, List<Pair<String,List<String>>> movesList) {
         print(message );
         printMovesList(movesList);
     }
@@ -71,7 +70,7 @@ public class Utils {
             print("] ");
         }
     }
-    public static void printMovesHash(@Nullable String message, Map<String,List<String>> movesList) {
+    public static void printMovesHash(String message, Map<String,List<String>> movesList) {
         if(movesList.isEmpty()) {
             return;
         }
@@ -99,7 +98,7 @@ public class Utils {
             printIDs(ids);
         }
     }
-    public static void debugIDs(@Nullable String message, List<String> ids) {
+    public static void debugIDs(String message, List<String> ids) {
         if (debug) {
             printIDs(message, ids);
         }
@@ -109,7 +108,7 @@ public class Utils {
             printMovesList(moveList);
         }
     }
-    public static void debugMovesList(@Nullable String message, List<Pair<String,List<String>>> movesList) {
+    public static void debugMovesList(String message, List<Pair<String,List<String>>> movesList) {
         if (debug) {
             printMovesList(message, movesList);
         }
@@ -119,7 +118,7 @@ public class Utils {
             printMoves(moves);
         }
     }
-    public static void debugMovesHash(@Nullable String message, Map<String,List<String>> movesList) {
+    public static void debugMovesHash(String message, Map<String,List<String>> movesList) {
         if (debug) {
             printMovesHash(message, movesList);
         }

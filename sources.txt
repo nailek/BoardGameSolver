@@ -1,0 +1,9 @@
+./src/com/celiunski/board/game/board/BoardUtils.java
+./src/com/celiunski/board/game/board/BoardNode.java
+./src/com/celiunski/board/game/board/Board.java
+./src/com/celiunski/board/game/utils/Utils.java
+./src/com/celiunski/board/game/utils/Vector3.java
+./src/com/celiunski/board/game/solver/Solver.java
+./src/com/celiunski/board/game/Main.java
+./src/com/celiunski/board/game/Exception/IncorrectIDException.java
+./src/com/celiunski/board/game/Exception/BoardNodeNotFoundException.java
