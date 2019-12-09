@@ -3,7 +3,7 @@ package com.celiunski.board.game.board;
 import com.celiunski.board.game.utils.Utils;
 import com.celiunski.board.game.utils.Vector3;
 
-public class BoardNode {
+class BoardNode {
     private int x;
     private int y;
     private int z;
@@ -45,7 +45,7 @@ public class BoardNode {
         return z;
     }
 
-    public Vector3 getPos() {
+    Vector3 getPos() {
         return vector3;
     }
 
@@ -53,7 +53,7 @@ public class BoardNode {
         return filled;
     }
 
-    public void setFilled(boolean filled) {
+    void setFilled(boolean filled) {
         this.filled = filled;
     }
 }

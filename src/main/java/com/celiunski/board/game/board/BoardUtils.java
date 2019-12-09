@@ -4,7 +4,7 @@ import com.celiunski.board.game.Exception.IncorrectIDException;
 import com.celiunski.board.game.utils.Utils;
 import com.celiunski.board.game.utils.Vector3;
 
-public class BoardUtils {
+class BoardUtils {
     static String getAdjacentKAway(String id, Utils.Axis axis, Utils.Move move, int k) throws IncorrectIDException {
         Vector3 vector3 = Utils.getVector(id);
         switch (axis) {
@@ -31,7 +31,7 @@ public class BoardUtils {
                 if(move.equals(Utils.Move.UP)) {
                     vector3.z += k;
                     vector3.y -= k;
-                }else {
+                } else {
                     vector3.z -= k;
                     vector3.y += k;
                 }
