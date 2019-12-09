@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.celiunski.board.game.Exception.BoardNodeNotFoundException;
 import com.celiunski.board.game.Exception.IncorrectIDException;
 import com.celiunski.board.game.utils.Utils;
 import com.celiunski.board.game.utils.Vector3;
@@ -121,7 +122,12 @@ public class Board {
     public boolean movePice(String moveFrom, String moveTo) throws IncorrectIDException {
         boolean allowedMove = isAllowedMove(moveFrom, moveTo);
         if(allowedMove) {
-            String middleNode = BoardUtils.getMiddleNode(moveFrom, moveTo);
+            String middleNode = null;
+            try {
+                middleNode = BoardUtils.getMiddleNode(moveFrom, moveTo);
+            } catch (BoardNodeNotFoundException e) {
+                return false;
+            }
             getNode(moveFrom).setFilled(false);
             getNode(middleNode).setFilled(false);
             getNode(moveTo).setFilled(true);
@@ -252,11 +258,13 @@ public class Board {
     }
     private boolean isAllowedMove(Vector3 moveFrom, Vector3 moveTo) {
         boolean allowed = BoardUtils.isAdjacentKAway(moveFrom, moveTo, 2);
-        Vector3 middleNode = BoardUtils.getMiddleNode(moveFrom, moveTo);
-        if (middleNode == null) {
-            //TODO: Log, error, not 2away Adjacents
+        Vector3 middleNode = null;
+        try {
+            middleNode = BoardUtils.getMiddleNode(moveFrom, moveTo);
+        } catch (BoardNodeNotFoundException e) {
             return false;
         }
+
         //allowed &= !isBlockedPass(moveFrom, middleNode);
         //allowed &= !isBlockedPass(moveTo, middleNode);
         allowed &= getNode(moveFrom).isFilled();

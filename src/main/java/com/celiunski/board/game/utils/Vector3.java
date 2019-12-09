@@ -30,4 +30,13 @@ public class Vector3 {
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Vector3{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                '}';
+    }
 }
