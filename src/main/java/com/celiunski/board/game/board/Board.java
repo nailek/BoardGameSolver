@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import com.celiunski.board.game.Exception.BoardNodeNotFoundException;
 import com.celiunski.board.game.Exception.IncorrectIDException;
+import com.celiunski.board.game.solver.NodeMoves;
 import com.celiunski.board.game.utils.Utils;
 import com.celiunski.board.game.utils.Vector3;
 import com.sun.tools.javac.util.Pair;
@@ -146,14 +147,14 @@ public class Board {
         return getEmptyNodes().size() == board.keySet().size()-1;// && board.get(Utils.getID(0,0,0)).isFilled();
     }
 
-    public List<Pair<String,List<String>>> getAvailableMoves() {
-        List<Pair<String,List<String>>> availableMoves = new ArrayList<>();
+    public List<NodeMoves> getAvailableMoves() {
+        List<NodeMoves> availableMoves = new ArrayList<>();
         List<String> emptyNodesID = getEmptyNodes();
         for (String id : emptyNodesID) {
 
             List<String> possiblePiecesToMove = getPossiblePiecesToMoveHere(id);
             if (!possiblePiecesToMove.isEmpty()) {
-                availableMoves.add(new Pair<>(id, possiblePiecesToMove));
+                availableMoves.add(new NodeMoves(id, possiblePiecesToMove));
             }
         }
         return availableMoves;

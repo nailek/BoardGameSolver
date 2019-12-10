@@ -10,13 +10,12 @@ import java.util.Map;
 import com.celiunski.board.game.Exception.IncorrectIDException;
 import com.celiunski.board.game.board.Board;
 import com.celiunski.board.game.utils.Utils;
-import com.sun.tools.javac.util.Pair;
 
 public class Solver {
     private int retries = 0;
     private Board finalBoard;
     private List<Board> deadEndBoards = new LinkedList<>();
-    private Map<Integer, List<Pair<String, List<String>>>> storePossibleMoves = new LinkedHashMap<>();
+    private Map<Integer, List<NodeMoves>> storePossibleMoves = new LinkedHashMap<>();
     private List<Board> halfSteps = new LinkedList<>();
     private boolean isFinished = false;
     private boolean isCutShort = false;
@@ -56,7 +55,7 @@ public class Solver {
     }
 
     private int makeMove(int iteration, Board board) {
-        List<Pair<String, List<String>>> possibleMovesList;
+        List<NodeMoves> possibleMovesList;
         possibleMovesList = board.getAvailableMoves();
 
         Map<String, List<String>> removedOptionsList = new LinkedHashMap<>();
@@ -106,7 +105,7 @@ public class Solver {
         return isCutShort;
     }
 
-    private int iteratePossibleMovesForThisNode(int thisNodeIteration, int iteration, Board board, List<Pair<String, List<String>>> possibleMovesList, Map<String, List<String>> removedMovesList) {
+    private int iteratePossibleMovesForThisNode(int thisNodeIteration, int iteration, Board board, List<NodeMoves> possibleMovesList, Map<String, List<String>> removedMovesList) {
         Utils.debugMovesList("|||POSSIBLE||| ", possibleMovesList);
         Utils.debugMovesHash("Removed ", removedMovesList);
         Board nextBoard = new Board(board);
@@ -126,9 +125,9 @@ public class Solver {
             ifDeadEndStoreFinalBoard(new Board(board));
             return iteration;
         }
-        String emptyNode = possibleMovesList.get(0).fst;
+        String emptyNode = possibleMovesList.get(0).getId();
         while(!possibleMovesList.isEmpty()) {
-            List<String> possibleMoves = possibleMovesList.get(0).snd;
+            List<String> possibleMoves = possibleMovesList.get(0).getMoves();
             String possibleMove = possibleMoves.get(0);
             iteration++;
             Utils.debugln("\nMove: "+iteration +" From: "+possibleMove +" To: "+ emptyNode);
@@ -172,7 +171,7 @@ public class Solver {
     }
 
     private void printUnreachedPossibleMoves() {
-        for (Map.Entry<Integer, List<Pair<String, List<String>>>> storedPossible : storePossibleMoves.entrySet()) {
+        for (Map.Entry<Integer, List<NodeMoves>> storedPossible : storePossibleMoves.entrySet()) {
             Utils.printMovesList(""+storedPossible.getKey(), storedPossible.getValue());
         }
     }

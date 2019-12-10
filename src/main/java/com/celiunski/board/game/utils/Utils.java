@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.celiunski.board.game.Exception.IncorrectIDException;
-import com.sun.tools.javac.util.Pair;
+import com.celiunski.board.game.solver.NodeMoves;
 
 public class Utils {
 
@@ -47,23 +47,23 @@ public class Utils {
         }
         println("");
     }
-    public static void printMovesList(List<Pair<String,List<String>>> possibleMovesList) {
+    public static void printMovesList(List<NodeMoves> possibleMovesList) {
         print("Moves List: ");
-        for(Pair<String,List<String>> possibleMoves : possibleMovesList){
+        for(NodeMoves possibleMoves : possibleMovesList){
             printMoves(possibleMoves);
         }
         println("");
     }
-    public static void printMovesList(String message, List<Pair<String,List<String>>> movesList) {
+    public static void printMovesList(String message, List<NodeMoves> movesList) {
         print(message );
         printMovesList(movesList);
     }
-    public static void printMoves(Pair<String,List<String>> moves) {
-        if(moves.fst.isEmpty()) {
-            println(" Moves for: "+ moves.fst);
+    public static void printMoves(NodeMoves moves) {
+        if(moves.isEmpty()) {
+            println(" Moves for: "+ moves.getId());
         } else {
-            print("Moves for: " + moves.fst +"  [  ");
-            for (String idPossibleMove : moves.snd) {
+            print("Moves for: " + moves.getId() +"  [  ");
+            for (String idPossibleMove : moves.getMoves()) {
                 print(idPossibleMove + " ");
             }
             //println("");
@@ -76,7 +76,7 @@ public class Utils {
         }
         print(message );
         for (String key : movesList.keySet()) {
-            printMoves(new Pair<>(key, movesList.get(key)));
+            printMoves(new NodeMoves(key, movesList.get(key)));
         }
         println("");
     }
@@ -103,17 +103,17 @@ public class Utils {
             printIDs(message, ids);
         }
     }
-    public static void debugMovesList(List<Pair<String,List<String>>> moveList) {
+    public static void debugMovesList(List<NodeMoves> moveList) {
         if (debug) {
             printMovesList(moveList);
         }
     }
-    public static void debugMovesList(String message, List<Pair<String,List<String>>> movesList) {
+    public static void debugMovesList(String message, List<NodeMoves> movesList) {
         if (debug) {
             printMovesList(message, movesList);
         }
     }
-    public static void debugMoves(Pair<String,List<String>> moves) {
+    public static void debugMoves(NodeMoves moves) {
         if (debug) {
             printMoves(moves);
         }
