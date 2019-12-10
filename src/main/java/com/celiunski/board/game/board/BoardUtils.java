@@ -15,7 +15,7 @@ class BoardUtils {
             case X:
                 if(move.equals(Utils.Move.UP)) {
                     vector3.x += k;
-                    vector3.z -= k;
+                    vector3.z -= k; //SI: z  NO: y
                 } else {
                     vector3.x -= k;
                     vector3.z += k;
@@ -24,7 +24,7 @@ class BoardUtils {
             case Y:
                 if(move.equals(Utils.Move.UP)) {
                     vector3.y += k;
-                    vector3.x -= k;
+                    vector3.x -= k; //SI: x  NO: z
 
                 } else {
                     vector3.y -= k;
@@ -34,7 +34,7 @@ class BoardUtils {
             case Z:
                 if(move.equals(Utils.Move.UP)) {
                     vector3.z += k;
-                    vector3.y -= k;
+                    vector3.y -= k; //SI: y  NO: x
                 } else {
                     vector3.z -= k;
                     vector3.y += k;
